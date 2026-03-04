@@ -41,9 +41,11 @@ esac
 
 latest_tag_redirect() {
 	# avoids GitHub API rate limits: follows /releases/latest redirect
-	local repo="$1"
-	curl -fsSLI "https://github.com/${repo}/releases/latest" \
-		| awk -F/ 'tolower($1) ~ /^location:/ {gsub("\r",""); print $NF; exit}'
+	local repo="$1" tag
+	tag="$(curl -fsSLI "https://github.com/${repo}/releases/latest" 2>/dev/null \
+		| awk -F/ 'tolower($1) ~ /^location:/ {gsub("\r",""); print $NF; exit}')" || true
+	[[ -n "${tag}" ]] || die "Could not resolve latest tag for ${repo}"
+	printf '%s' "${tag}"
 }
 
 install_zip_bin() {
