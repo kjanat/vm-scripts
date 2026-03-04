@@ -13,7 +13,7 @@ fi
 # --- uv ----------------------------------------------------------------------
 log "uv: install system-wide"
 export UV_INSTALL_DIR="/usr/local/bin"
-export UV_PYTHON_BIN_DIR="/usr/local/bin"
+export XDG_BIN_HOME="/usr/local/bin"
 
 if ! command -v uv >/dev/null 2>&1; then
 	curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -29,10 +29,10 @@ PYVER="$(uv python list --only-downloads --output-format=json 2>/dev/null \
 		and (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")))] | first | .version')"
 if [[ -z "${PYVER}" ]]; then
 	log "uv: could not determine latest stable python, falling back to default"
-	uv python install --default
+	uv python install --default --force
 else
 	log "uv: installing python ${PYVER}"
-	uv python install --default "${PYVER}"
+	uv python install --default --force "${PYVER}"
 fi
 
 python3 --version
