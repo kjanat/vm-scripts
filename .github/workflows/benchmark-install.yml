@@ -79,9 +79,13 @@ jobs:
                     bins="${bins:+$bins, }$cmd $ver"
                   fi
                 done
-                pyver="$(/usr/local/bin/python3 -c 'import platform; print(platform.python_version())' 2>/dev/null)" || true
-                if [[ -z "$pyver" ]] && command -v python3 >/dev/null 2>&1; then
+                managed_py="$(uv python find --managed-python 2>/dev/null)" || true
+                if [[ -n "$managed_py" ]]; then
+                  pyver="$("$managed_py" -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
+                elif command -v python3 >/dev/null 2>&1; then
                   pyver="$(python3 -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
+                else
+                  pyver=""
                 fi
                 [[ -n "$pyver" ]] && bins="${bins:+$bins, }python $pyver"
                 installed="${bins:-none}"
