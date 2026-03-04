@@ -77,9 +77,8 @@ jobs:
 
             case "$tool" in
               uv)
-                # uv also installs python, ruff, and ty
-                # _ver() can't handle python3 (outputs "Python X.Y" not "python3 X.Y")
-                # so we extract versions individually
+                # uv installs python, ruff, and ty; ensure their bin dir is in PATH
+                export PATH="/usr/local/bin:$PATH"
                 bins=""
                 for cmd in uv ruff ty; do
                   if command -v "$cmd" >/dev/null 2>&1; then
