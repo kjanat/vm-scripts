@@ -139,6 +139,12 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 EOF
 chmod 0644 /etc/profile.d/volta.sh
 
+# Shell aliases for all users
+cat >/etc/profile.d/aliases.sh <<'EOF'
+alias ll='ls -lAhF --color=auto --group-directories-first'
+EOF
+chmod 0644 /etc/profile.d/aliases.sh
+
 # Hard wrappers so it works in non-login shells too (cron, cloud-init leftovers, etc.)
 wrap() {
 	local name="$1"
