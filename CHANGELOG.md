@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `opencode.sh` — AI coding assistant from `anomalyco/opencode`
   - `awscli.sh` — AWS CLI v2 from Amazon's official installer
   - `azcli.sh` — Azure CLI via Microsoft's Debian installer
+  - `gh.sh` — GitHub CLI from `cli/cli`
   - `gcloud.sh` — Google Cloud SDK to `/opt/google-cloud-sdk`
   - `jq.sh` — JSON processor from `jqlang/jq`
 - `AGENTS.md` files for root, `install/`, `gcp/`, `aws/`, `azure/`, and
