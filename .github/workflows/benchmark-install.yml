@@ -78,13 +78,19 @@ jobs:
             case "$tool" in
               uv)
                 # uv also installs python, ruff, and ty
+                # _ver() can't handle python3 (outputs "Python X.Y" not "python3 X.Y")
+                # so we extract versions individually
                 bins=""
-                for cmd in uv python3 ruff ty; do
+                for cmd in uv ruff ty; do
                   if command -v "$cmd" >/dev/null 2>&1; then
                     ver="$(_ver "$cmd" || echo '?')"
                     bins="${bins:+$bins, }$cmd $ver"
                   fi
                 done
+                if command -v python3 >/dev/null 2>&1; then
+                  pyver="$(python3 -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
+                  bins="${bins:+$bins, }python $pyver"
+                fi
                 installed="${bins:-none}"
                 ;;
               volta)
