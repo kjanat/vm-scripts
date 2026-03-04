@@ -29,10 +29,10 @@ PYVER="$(uv python list --only-downloads --output-format=json 2>/dev/null \
 		and (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")))] | first | .version')"
 if [[ -z "${PYVER}" ]]; then
 	log "uv: could not determine latest stable python, falling back to default"
-	uv python install --default --force
+	uv python install --default --force --preview-features python-install-default
 else
 	log "uv: installing python ${PYVER}"
-	uv python install --default --force "${PYVER}"
+	uv python install --default --force --preview-features python-install-default "${PYVER}"
 fi
 
 python3 --version
