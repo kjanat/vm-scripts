@@ -15,7 +15,7 @@ jobs:
   benchmark:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Discover install scripts
         id: discover
@@ -62,21 +62,43 @@ jobs:
 
             # Determine what got installed (tool name = script sans .sh)
             tool="${name%.sh}"
+
+            # Helper: get clean version string for a command
+            # Strips the tool name prefix and trims to just the version token
+            _ver() {
+              local cmd="$1"
+              local raw
+              raw="$("$cmd" --version 2>/dev/null | head -1)" || return 1
+              # Remove leading tool name (e.g. "deno 2.7.2 ..." → "2.7.2 ...")
+              raw="${raw#"$cmd" }"
+              # Keep only the first whitespace-delimited token
+              echo "${raw%% *}"
+            }
+
             case "$tool" in
               volta)
-                # volta installs node/npm/pnpm too
+                # volta installs node/npm/pnpm too; set env for wrappers
+                export VOLTA_HOME="/opt/volta"
+                export PATH="$VOLTA_HOME/bin:$PATH"
                 bins=""
                 for cmd in volta node npm pnpm; do
                   if command -v "$cmd" >/dev/null 2>&1; then
-                    ver="$("$cmd" --version 2>/dev/null || echo '?')"
+                    ver="$(_ver "$cmd" || echo '?')"
                     bins="${bins:+$bins, }$cmd $ver"
                   fi
                 done
                 installed="${bins:-none}"
                 ;;
               aliases)
-                if [[ -f /etc/profile.d/00-aliases.sh ]]; then
-                  installed="profile.d configured"
+                count=0
+                files=""
+                for f in /etc/profile.d/aliases*.sh; do
+                  [[ -f "$f" ]] || continue
+                  count=$(( count + 1 ))
+                  files="${files:+$files, }$(basename "$f")"
+                done
+                if (( count > 0 )); then
+                  installed="${count} profile.d files (${files})"
                 else
                   installed="—"
                 fi
@@ -104,8 +126,7 @@ jobs:
                 ;;
               *)
                 if command -v "$tool" >/dev/null 2>&1; then
-                  ver="$("$tool" --version 2>/dev/null | head -1 || echo '?')"
-                  installed="$tool $ver"
+                  installed="$tool $(_ver "$tool" || echo '?')"
                 else
                   installed="—"
                 fi
