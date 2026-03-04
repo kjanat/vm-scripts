@@ -32,15 +32,11 @@ install/
 ## Provisioning Scripts
 
 Each provider directory contains a ready-to-run script that installs all JS/TS
-dev tools system-wide. The only differences between providers are the header
-comments, the package manager (apt vs dnf), and which provider CLI is included.
+dev tools system-wide to `/usr/local/bin` and `/opt/volta`. The only differences
+between providers are the package manager (`apt` vs `dnf`) and which provider
+CLI is included.
 
-### [`gcp/debian-node.sh`](gcp/debian-node.sh)
-
-Sets up a Debian-based GCP VM with Node.js and JS/TS tooling. Installs
-system-wide to `/usr/local/bin` and `/opt/volta`.
-
-**What it installs:**
+**Common tools installed by every script:**
 
 | Tool   | Method                          |
 | ------ | ------------------------------- |
@@ -54,55 +50,30 @@ system-wide to `/usr/local/bin` and `/opt/volta`.
 | npm    | Via Volta                       |
 | pnpm   | Via Volta                       |
 
-Also configures bash/zsh tab completions and shell aliases for all users.
+All scripts also configure bash/zsh tab completions and shell aliases for all
+users.
 
-**Usage (GCP startup script):**
-
-```bash
-#!/usr/bin/env bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
-chmod +x debian-node.sh
-sudo ./debian-node.sh
-```
-
-**Or run directly:**
+**Usage — pipe directly or download first:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+# pipe to bash
+curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/<provider>/<script>.sh | sudo bash
+
+# or download, then run
+curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/<provider>/<script>.sh -o setup.sh
+chmod +x setup.sh
+sudo ./setup.sh
 ```
 
-### [`aws/debian-node.sh`](aws/debian-node.sh)
+**Available scripts:**
 
-Same tools as GCP, plus AWS CLI v2. For Debian/Ubuntu EC2 instances.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/debian-node.sh | sudo bash
-```
-
-### [`aws/amazon-linux-node.sh`](aws/amazon-linux-node.sh)
-
-Same tools as above but uses `dnf` instead of `apt`. For Amazon Linux 2023 EC2
-instances.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/amazon-linux-node.sh | sudo bash
-```
-
-### [`azure/debian-node.sh`](azure/debian-node.sh)
-
-Same tools as GCP, plus Azure CLI. For Debian/Ubuntu Azure VMs.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/azure/debian-node.sh | sudo bash
-```
-
-### [`digitalocean/debian-node.sh`](digitalocean/debian-node.sh)
-
-Same tools as GCP (no provider CLI needed on the Droplet itself).
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/digitalocean/debian-node.sh | sudo bash
-```
+| Script | Provider | Base OS | Extra CLI |
+| ------ | -------- | ------- | --------- |
+| [`gcp/debian-node.sh`](gcp/debian-node.sh) | GCP Compute Engine | Debian (apt) | — |
+| [`aws/debian-node.sh`](aws/debian-node.sh) | AWS EC2 | Debian (apt) | AWS CLI v2 |
+| [`aws/amazon-linux-node.sh`](aws/amazon-linux-node.sh) | AWS EC2 | Amazon Linux 2023 (dnf) | AWS CLI v2 |
+| [`azure/debian-node.sh`](azure/debian-node.sh) | Azure VM | Debian (apt) | Azure CLI |
+| [`digitalocean/debian-node.sh`](digitalocean/debian-node.sh) | DigitalOcean Droplet | Debian (apt) | — |
 
 ## Individual Install Scripts
 
