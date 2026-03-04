@@ -33,7 +33,7 @@ if [[ -f "${_repo_dir}/install/_common.sh" ]]; then
 else
 	_install_tmp="$(mktemp -d)"
 	INSTALL_DIR="${_install_tmp}"
-	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh; do
+	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh aliases.sh; do
 		curl -fsSL "${REPO_RAW}/install/${_f}" -o "${INSTALL_DIR}/${_f}"
 	done
 fi
@@ -72,10 +72,8 @@ source "${INSTALL_DIR}/dprint.sh"
 # shellcheck source=install/volta.sh
 source "${INSTALL_DIR}/volta.sh"
 
-# Shell aliases for all users
-cat >/etc/profile.d/aliases.sh <<'EOF'
-alias ll='ls -lAhF --color=auto --group-directories-first'
-EOF
-chmod 0644 /etc/profile.d/aliases.sh
+# Shell aliases and options for all users
+# shellcheck source=install/aliases.sh
+source "${INSTALL_DIR}/aliases.sh"
 
 log "done"

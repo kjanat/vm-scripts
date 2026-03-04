@@ -9,6 +9,7 @@ gcp/
   debian-node.sh    Full Debian setup (apt + all tools)
 install/
   _common.sh        Shared helpers (logging, arch detection, completions, GitHub release utils)
+  aliases.sh        Shell aliases, functions, and options for bash/zsh
   shfmt.sh          Shell formatter from mvdan/sh
   just.sh           Command runner from just.systems
   bun.sh            JS runtime from oven-sh/bun
