@@ -2,7 +2,22 @@
 
 Provisioning scripts for cloud VMs.
 
-## Scripts
+## Structure
+
+```tree
+gcp/
+  debian-node.sh    Full Debian setup (apt + all tools)
+install/
+  _common.sh        Shared helpers (logging, arch detection, completions, GitHub release utils)
+  shfmt.sh          Shell formatter from mvdan/sh
+  just.sh           Command runner from just.systems
+  bun.sh            JS runtime from oven-sh/bun
+  deno.sh           JS/TS runtime from denoland/deno
+  dprint.sh         Code formatter from dprint/dprint
+  volta.sh          Node toolchain manager + node, npm, pnpm
+```
+
+## Provisioning Scripts
 
 ### [`gcp/debian-node.sh`](gcp/debian-node.sh)
 
@@ -29,7 +44,7 @@ Also configures bash/zsh tab completions and shell aliases for all users.
 
 ```bash
 #!/usr/bin/env bash
-curl -fsSL https://raw.github.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
+curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
 chmod +x debian-node.sh
 sudo ./debian-node.sh
 ```
@@ -37,5 +52,27 @@ sudo ./debian-node.sh
 **Or run directly:**
 
 ```bash
-curl -fsSL https://raw.github.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+```
+
+## Individual Install Scripts
+
+Each script under `install/` is self-contained and can be run standalone. When
+run outside a local clone, it auto-fetches `_common.sh` from the repo.
+
+```bash
+# Example: install just only
+curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/install/just.sh | sudo bash
+```
+
+All scripts require root. Supports `x86_64` and `aarch64`.
+
+### Shell Completions
+
+Completions are auto-detected (bash-completion installed? zsh available?).
+Override with env vars:
+
+```bash
+COMPLETIONS_BASH=0 sudo ./debian-node.sh   # disable bash completions
+COMPLETIONS_ZSH=1  sudo ./install/bun.sh   # force zsh completions
 ```
