@@ -15,8 +15,9 @@ Linux (Debian/Ubuntu and Amazon Linux).
 
 ### Shell scripts
 
-- All scripts use `#!/usr/bin/env bash` with `set -euo pipefail` and
-  `IFS=$'\n\t'`.
+- Provider entry scripts set `#!/usr/bin/env bash` with `set -euo pipefail` and
+  `IFS=$'\n\t'`. Install scripts under `install/` are designed to be sourced and
+  inherit strict mode from the caller — they do not set these options themselves.
 - Indentation: tabs (matching `shfmt -i 0`).
 - Formatting: `shfmt -i 0 -ln bash -bn -ci` via dprint (see `.dprint.jsonc`).
 - ShellCheck-clean: use `# shellcheck source=...` annotations for sourced files.

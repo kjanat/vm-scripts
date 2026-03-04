@@ -15,9 +15,9 @@ shell aliases.
 
 ### Editing
 
-- The download list in the `for _f in ...` loop (line 36) must include every
-  `install/*.sh` file that this script sources. If you add a new tool source
-  line, add it to the download list too.
+- The `for _f in ...; do` download loop that fetches `install/*.sh` files must
+  list every script this file later sources. If you add a new tool source line,
+  add the filename to the download list in that loop too.
 - Provider scripts are near-copies of each other. If you change the tool install
   order or add a new tool here, check `aws/`, `azure/`, and `digitalocean/` for
   the same change.
