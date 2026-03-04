@@ -76,6 +76,17 @@ jobs:
             }
 
             case "$tool" in
+              uv)
+                # uv also installs python, ruff, and ty
+                bins=""
+                for cmd in uv python3 ruff ty; do
+                  if command -v "$cmd" >/dev/null 2>&1; then
+                    ver="$(_ver "$cmd" || echo '?')"
+                    bins="${bins:+$bins, }$cmd $ver"
+                  fi
+                done
+                installed="${bins:-none}"
+                ;;
               volta)
                 # volta installs node/npm/pnpm too; set env for wrappers
                 export VOLTA_HOME="/opt/volta"
