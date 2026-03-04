@@ -32,11 +32,11 @@ if [[ -f "${_repo_dir}/install/_common.sh" ]]; then
 else
 	_install_tmp="$(mktemp -d)"
 	INSTALL_DIR="${_install_tmp}"
+	trap 'rm -rf "${_install_tmp}"' EXIT
 	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh awscli.sh aliases.sh; do
 		curl -fsSL "${REPO_RAW}/install/${_f}" -o "${INSTALL_DIR}/${_f}"
 	done
 fi
-[[ -n "${_install_tmp}" ]] && trap 'rm -rf "${_install_tmp}"' EXIT
 
 # ---------------------------------------------------------------------------
 # Platform dependencies (Amazon Linux 2023 uses dnf)
