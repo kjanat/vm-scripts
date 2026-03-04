@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # Install shfmt system-wide from mvdan/sh releases.
 # shellcheck source=install/_common.sh
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/_common.sh"
+if [[ -z "${_COMMON_LOADED:-}" ]]; then
+	_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || _dir=""
+	if [[ -f "${_dir}/_common.sh" ]]; then
+		source "${_dir}/_common.sh"
+	else
+		source <(curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh")
+	fi
+fi
 
 log "shfmt: install system-wide (/usr/local/bin)"
 if ! command -v shfmt >/dev/null 2>&1; then

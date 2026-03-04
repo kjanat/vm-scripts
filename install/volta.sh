@@ -2,8 +2,14 @@
 # Install volta system-wide to /opt/volta with node, npm, pnpm.
 # Sets up profile.d env and hard wrappers for non-login shells.
 # shellcheck source=install/_common.sh
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/_common.sh"
+if [[ -z "${_COMMON_LOADED:-}" ]]; then
+	_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || _dir=""
+	if [[ -f "${_dir}/_common.sh" ]]; then
+		source "${_dir}/_common.sh"
+	else
+		source <(curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh")
+	fi
+fi
 
 log "volta: install system-wide (/opt/volta)"
 export VOLTA_HOME="/opt/volta"
