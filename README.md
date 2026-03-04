@@ -20,8 +20,9 @@ install/
   awscli.sh                   AWS CLI v2 from Amazon's official installer
   azcli.sh                    Azure CLI via Microsoft's Debian installer
   gcloud.sh                   Google Cloud SDK to /opt/google-cloud-sdk
+  opencode.sh                 AI coding assistant from anomalyco/opencode
   shfmt.sh                    Shell formatter from mvdan/sh
-  just.sh                     Command runner from just.systems
+  just.sh                     Command runner from casey/just
   bun.sh                      JS runtime from oven-sh/bun
   deno.sh                     JS/TS runtime from denoland/deno
   dprint.sh                   Code formatter from dprint/dprint
