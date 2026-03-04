@@ -25,10 +25,9 @@ uvx --version
 
 # --- python via uv -----------------------------------------------------------
 log "uv: install latest stable python"
-PYVER="$(uv python list 2>/dev/null \
-	| grep '^cpython-[0-9]' | grep 'download available' \
-	| grep -v -E 'freethreaded|rc[0-9]|[ab][0-9]' \
-	| head -1 | sed 's/^cpython-//;s/-.*//')"
+PYVER="$(uv python list --only-downloads --output-format=json 2>/dev/null \
+	| jq -r '[.[] | select(.implementation == "cpython" and .variant == "default"
+		and (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")))] | first | .version')"
 if [[ -z "${PYVER}" ]]; then
 	log "uv: could not determine latest stable python, falling back to default"
 	uv python install --default
