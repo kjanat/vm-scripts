@@ -36,6 +36,7 @@ wrap() {
 #!/usr/bin/env bash
 set -euo pipefail
 export VOLTA_HOME="/opt/volta"
+export VOLTA_FEATURE_PNPM=1
 export PATH="$VOLTA_HOME/bin:$PATH"
 exec "$VOLTA_HOME/bin/REPLACE_ME" "$@"
 EOF
