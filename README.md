@@ -45,7 +45,7 @@ system-wide to `/usr/local/bin` and `/opt/volta`.
 | Tool   | Method                          |
 | ------ | ------------------------------- |
 | shfmt  | Binary from `mvdan/sh` releases |
-| just   | `just.systems/install.sh`       |
+| just   | Binary from `casey/just`        |
 | bun    | Binary from `oven-sh/bun`       |
 | deno   | Binary from `denoland/deno`     |
 | dprint | Binary from `dprint/dprint`     |
