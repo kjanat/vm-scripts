@@ -47,5 +47,5 @@ Modular, standalone install scripts. Each installs one tool system-wide.
 | `opencode.sh` | opencode         | tar.gz from GitHub        | Static yargs heredocs  |
 | `awscli.sh`   | AWS CLI v2       | Official zip installer    | Static `complete -C`   |
 | `azcli.sh`    | Azure CLI        | Microsoft apt installer   | Auto-registered by pkg |
-| `gcloud.sh`   | Google Cloud SDK | `sdk.cloud.google.com`    | Bundled inc files      |
+| `gcloud.sh`   | Google Cloud SDK | `sdk.cloud.google.com`    | Bundled completion files      |
 | `aliases.sh`  | (shell config)   | Writes to /etc/profile.d/ | N/A                    |
