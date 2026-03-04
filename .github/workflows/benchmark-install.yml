@@ -17,18 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Discover install scripts
-        id: discover
-        run: |
-          scripts=()
-          for f in install/*.sh; do
-            name="$(basename "$f")"
-            # skip internal helpers
-            [[ "$name" == _* ]] && continue
-            scripts+=("$name")
-          done
-          printf "scripts=%s\n" "$(printf '%s\n' "${scripts[@]}" | jq -Rsc 'split("\n") | map(select(. != ""))')" >> "$GITHUB_OUTPUT"
-
       - name: Run benchmarks
         id: bench
         run: |

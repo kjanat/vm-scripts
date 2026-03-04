@@ -17,6 +17,7 @@ export XDG_BIN_HOME="/usr/local/bin"
 
 if ! command -v uv >/dev/null 2>&1; then
 	curl -LsSf https://astral.sh/uv/install.sh | sh
+	hash -r
 fi
 
 uv --version
@@ -34,6 +35,7 @@ else
 	log "uv: installing python ${PYVER}"
 	uv python install --default --force --preview-features python-install-default "${PYVER}"
 fi
+hash -r
 
 python3 --version
 
@@ -42,6 +44,7 @@ log "ruff: install from GitHub"
 export RUFF_INSTALL_DIR="/usr/local/bin"
 if ! command -v ruff >/dev/null 2>&1; then
 	curl -LsSf https://astral.sh/ruff/install.sh | sh
+	hash -r
 fi
 
 ruff --version
@@ -51,6 +54,7 @@ log "ty: install from GitHub"
 export TY_INSTALL_DIR="/usr/local/bin"
 if ! command -v ty >/dev/null 2>&1; then
 	curl -LsSf https://astral.sh/ty/install.sh | sh
+	hash -r
 fi
 
 ty --version
