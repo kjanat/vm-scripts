@@ -67,13 +67,13 @@ sudo ./setup.sh
 
 **Available scripts:**
 
-| Script | Provider | Base OS | Extra CLI |
-| ------ | -------- | ------- | --------- |
-| [`gcp/debian-node.sh`](gcp/debian-node.sh) | GCP Compute Engine | Debian (apt) | — |
-| [`aws/debian-node.sh`](aws/debian-node.sh) | AWS EC2 | Debian (apt) | AWS CLI v2 |
-| [`aws/amazon-linux-node.sh`](aws/amazon-linux-node.sh) | AWS EC2 | Amazon Linux 2023 (dnf) | AWS CLI v2 |
-| [`azure/debian-node.sh`](azure/debian-node.sh) | Azure VM | Debian (apt) | Azure CLI |
-| [`digitalocean/debian-node.sh`](digitalocean/debian-node.sh) | DigitalOcean Droplet | Debian (apt) | — |
+| Script                                                       | Provider             | Base OS                 | Extra CLI  |
+| ------------------------------------------------------------ | -------------------- | ----------------------- | ---------- |
+| [`gcp/debian-node.sh`](gcp/debian-node.sh)                   | GCP Compute Engine   | Debian (apt)            | —          |
+| [`aws/debian-node.sh`](aws/debian-node.sh)                   | AWS EC2              | Debian (apt)            | AWS CLI v2 |
+| [`aws/amazon-linux-node.sh`](aws/amazon-linux-node.sh)       | AWS EC2              | Amazon Linux 2023 (dnf) | AWS CLI v2 |
+| [`azure/debian-node.sh`](azure/debian-node.sh)               | Azure VM             | Debian (apt)            | Azure CLI  |
+| [`digitalocean/debian-node.sh`](digitalocean/debian-node.sh) | DigitalOcean Droplet | Debian (apt)            | —          |
 
 ## Individual Install Scripts
 

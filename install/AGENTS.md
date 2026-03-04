@@ -36,16 +36,16 @@ Modular, standalone install scripts. Each installs one tool system-wide.
 
 ## Scripts overview
 
-| Script       | Tool             | Install method             | Completions            |
-| ------------ | ---------------- | -------------------------- | ---------------------- |
-| `shfmt.sh`   | shfmt            | Raw binary from GitHub     | None                   |
-| `just.sh`    | just             | tar.gz from GitHub         | Bundled in tarball     |
-| `bun.sh`     | bun              | zip from GitHub            | `bun completions`      |
-| `deno.sh`    | deno             | zip from GitHub            | `deno completions`     |
-| `dprint.sh`  | dprint           | zip from GitHub            | `dprint completions`   |
-| `volta.sh`   | volta+node+pnpm  | `get.volta.sh` + wrappers  | `volta completions`    |
-| `opencode.sh`| opencode         | tar.gz from GitHub         | Static yargs heredocs  |
-| `awscli.sh`  | AWS CLI v2       | Official zip installer     | Static `complete -C`   |
-| `azcli.sh`   | Azure CLI        | Microsoft apt installer    | Auto-registered by pkg |
-| `gcloud.sh`  | Google Cloud SDK | `sdk.cloud.google.com`     | Bundled inc files      |
-| `aliases.sh` | (shell config)   | Writes to /etc/profile.d/  | N/A                    |
+| Script        | Tool             | Install method            | Completions            |
+| ------------- | ---------------- | ------------------------- | ---------------------- |
+| `shfmt.sh`    | shfmt            | Raw binary from GitHub    | None                   |
+| `just.sh`     | just             | tar.gz from GitHub        | Bundled in tarball     |
+| `bun.sh`      | bun              | zip from GitHub           | `bun completions`      |
+| `deno.sh`     | deno             | zip from GitHub           | `deno completions`     |
+| `dprint.sh`   | dprint           | zip from GitHub           | `dprint completions`   |
+| `volta.sh`    | volta+node+pnpm  | `get.volta.sh` + wrappers | `volta completions`    |
+| `opencode.sh` | opencode         | tar.gz from GitHub        | Static yargs heredocs  |
+| `awscli.sh`   | AWS CLI v2       | Official zip installer    | Static `complete -C`   |
+| `azcli.sh`    | Azure CLI        | Microsoft apt installer   | Auto-registered by pkg |
+| `gcloud.sh`   | Google Cloud SDK | `sdk.cloud.google.com`    | Bundled inc files      |
+| `aliases.sh`  | (shell config)   | Writes to /etc/profile.d/ | N/A                    |
