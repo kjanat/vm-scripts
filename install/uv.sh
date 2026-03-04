@@ -13,6 +13,9 @@ fi
 # --- uv ----------------------------------------------------------------------
 log "uv: install system-wide"
 export UV_INSTALL_DIR="/usr/local/bin"
+export UV_TOOL_BIN_DIR="/usr/local/bin"
+export UV_PYTHON_BIN_DIR="/usr/local/bin"
+
 if ! command -v uv >/dev/null 2>&1; then
 	curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
@@ -22,7 +25,7 @@ uvx --version
 
 # --- python via uv -----------------------------------------------------------
 log "uv: install python@latest"
-uv python install --default
+uv python install --default --preview
 
 python3 --version
 
