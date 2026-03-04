@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install uv system-wide, then use it to install python, ruff, and ty.
+# Install uv, python, ruff, and ty system-wide.
 # shellcheck source=install/_common.sh
 if [[ -z "${_COMMON_LOADED:-}" ]]; then
 	_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || _dir=""
@@ -13,7 +13,6 @@ fi
 # --- uv ----------------------------------------------------------------------
 log "uv: install system-wide"
 export UV_INSTALL_DIR="/usr/local/bin"
-export UV_TOOL_BIN_DIR="/usr/local/bin"
 export UV_PYTHON_BIN_DIR="/usr/local/bin"
 
 if ! command -v uv >/dev/null 2>&1; then
@@ -38,15 +37,21 @@ fi
 
 python3 --version
 
-# --- ruff via uv tool --------------------------------------------------------
-log "uv: install ruff@latest"
-uv tool install ruff@latest
+# --- ruff from GitHub ---------------------------------------------------------
+log "ruff: install from GitHub"
+export RUFF_INSTALL_DIR="/usr/local/bin"
+if ! command -v ruff >/dev/null 2>&1; then
+	curl -LsSf https://astral.sh/ruff/install.sh | sh
+fi
 
 ruff --version
 
-# --- ty via uv tool -----------------------------------------------------------
-log "uv: install ty@latest"
-uv tool install ty@latest
+# --- ty from GitHub -----------------------------------------------------------
+log "ty: install from GitHub"
+export TY_INSTALL_DIR="/usr/local/bin"
+if ! command -v ty >/dev/null 2>&1; then
+	curl -LsSf https://astral.sh/ty/install.sh | sh
+fi
 
 ty --version
 

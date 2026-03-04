@@ -77,7 +77,7 @@ jobs:
 
             case "$tool" in
               uv)
-                # uv installs python, ruff, and ty; ensure their bin dir is in PATH
+                # uv installs python, ruff, and ty to /usr/local/bin
                 export PATH="/usr/local/bin:$PATH"
                 bins=""
                 for cmd in uv ruff ty; do
