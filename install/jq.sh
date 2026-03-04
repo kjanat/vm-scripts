@@ -7,7 +7,7 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 		source "${_dir}/_common.sh"
 	else
 		_common_tmp="$(mktemp)"
-		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh" -o "${_common_tmp}"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
 		source "${_common_tmp}"
 		rm -f "${_common_tmp}"
 	fi
@@ -17,9 +17,9 @@ log "jq: install system-wide (/usr/local/bin)"
 if ! command -v jq >/dev/null 2>&1; then
 	JQ_TAG="$(latest_tag_redirect "jqlang/jq")"
 	case "${ARCH_SHORT}" in
-		x86_64) JQ_ARCH="amd64" ;;
-		aarch64) JQ_ARCH="arm64" ;;
-		*) die "Unsupported arch for jq: ${ARCH_SHORT}" ;;
+	x86_64) JQ_ARCH="amd64" ;;
+	aarch64) JQ_ARCH="arm64" ;;
+	*) die "Unsupported arch for jq: ${ARCH_SHORT}" ;;
 	esac
 	_tmp="$(mktemp -d)"
 	trap 'rm -rf "${_tmp}"' RETURN

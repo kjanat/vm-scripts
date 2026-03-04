@@ -18,7 +18,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}"
+BRANCH="${BRANCH:-master}"
+REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH}}"
 
 # ---------------------------------------------------------------------------
 # Resolve install script directory: local clone or temp download

@@ -7,7 +7,7 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 		source "${_dir}/_common.sh"
 	else
 		_common_tmp="$(mktemp)"
-		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh" -o "${_common_tmp}"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
 		source "${_common_tmp}"
 		rm -f "${_common_tmp}"
 	fi
@@ -28,8 +28,8 @@ uvx --version
 
 # --- python via uv -----------------------------------------------------------
 log "uv: install latest stable python"
-PYVER="$(uv python list --only-downloads --output-format=json 2>/dev/null \
-	| jq -r '[.[] | select(.implementation == "cpython" and .variant == "default"
+PYVER="$(uv python list --only-downloads --output-format=json 2>/dev/null |
+	jq -r '[.[] | select(.implementation == "cpython" and .variant == "default"
 		and (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+$")))] | first | .version')"
 if [[ -z "${PYVER}" ]]; then
 	log "uv: could not determine latest stable python, falling back to default"

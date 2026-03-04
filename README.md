@@ -103,6 +103,16 @@ curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/install/gc
 curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/install/azcli.sh | sudo bash
 ```
 
+### Branch Override
+
+Scripts default to `master`. Set `BRANCH` to fetch from a different branch:
+
+```bash
+# test a feature branch
+BRANCH="feat/new-tool" curl -fsSL \
+  https://raw.githubusercontent.com/kjanat/vm-scripts/feat/new-tool/install/just.sh | sudo bash
+```
+
 ### Shell Completions
 
 Completions are auto-detected (bash-completion installed? zsh available?).

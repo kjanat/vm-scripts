@@ -7,7 +7,7 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 		source "${_dir}/_common.sh"
 	else
 		_common_tmp="$(mktemp)"
-		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh" -o "${_common_tmp}"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
 		source "${_common_tmp}"
 		rm -f "${_common_tmp}"
 	fi
@@ -17,14 +17,14 @@ log "opencode: install system-wide (/usr/local/bin)"
 if ! command -v opencode >/dev/null 2>&1; then
 	OC_TAG="$(latest_tag_redirect "anomalyco/opencode")"
 	case "${ARCH_SHORT}" in
-		x86_64) OC_ARCH="x64" ;;
-		aarch64) OC_ARCH="arm64" ;;
-		*) die "Unsupported arch for opencode: ${ARCH_SHORT}" ;;
+	x86_64) OC_ARCH="x64" ;;
+	aarch64) OC_ARCH="arm64" ;;
+	*) die "Unsupported arch for opencode: ${ARCH_SHORT}" ;;
 	esac
 	_tmp="$(mktemp -d)"
 	trap 'rm -rf "${_tmp}"' RETURN
-	curl -fsSL "https://github.com/anomalyco/opencode/releases/download/${OC_TAG}/opencode-linux-${OC_ARCH}.tar.gz" \
-		| tar xz -C "${_tmp}" opencode
+	curl -fsSL "https://github.com/anomalyco/opencode/releases/download/${OC_TAG}/opencode-linux-${OC_ARCH}.tar.gz" |
+		tar xz -C "${_tmp}" opencode
 	install -m 0755 "${_tmp}/opencode" /usr/local/bin/opencode
 fi
 

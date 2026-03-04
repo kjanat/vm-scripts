@@ -79,6 +79,9 @@ jobs:
               # Remove leading tool name with space or hyphen (e.g. "deno 2.7.2", "jq-1.7")
               raw="${raw#"$cmd" }"
               raw="${raw#"$cmd"-}"
+              # Strip "version " prefix (e.g. "gh version 2.87.3 (...)")
+              raw="${raw#version }"
+              raw="${raw#Version }"
               # Strip leading "v" prefix (e.g. "v3.12.0" → "3.12.0")
               raw="${raw#v}"
               # Keep only the first whitespace-delimited token

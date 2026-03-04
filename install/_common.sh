@@ -19,8 +19,9 @@ _COMMON_LOADED=1
 set -euo pipefail
 IFS=$'\n\t'
 
-REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}"
-export REPO_RAW
+BRANCH="${BRANCH:-master}"
+REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH}}"
+export BRANCH REPO_RAW
 
 log() { printf "\n==> %s\n" "$*"; }
 die() {
@@ -34,9 +35,9 @@ _euid="${EUID:-}"
 
 ARCH="$(uname -m)"
 case "${ARCH}" in
-	x86_64 | amd64) ARCH_SHORT="x86_64" ;;
-	aarch64 | arm64) ARCH_SHORT="aarch64" ;;
-	*) die "Unsupported arch: ${ARCH}" ;;
+x86_64 | amd64) ARCH_SHORT="x86_64" ;;
+aarch64 | arm64) ARCH_SHORT="aarch64" ;;
+*) die "Unsupported arch: ${ARCH}" ;;
 esac
 export ARCH_SHORT
 
@@ -46,24 +47,24 @@ export ARCH_SHORT
 
 BASH_COMP=""
 case "${COMPLETIONS_BASH:-auto}" in
-	1) BASH_COMP="/usr/share/bash-completion/completions" ;;
-	0) ;;
-	*)
-		if [[ -d /usr/share/bash-completion ]]; then
-			BASH_COMP="/usr/share/bash-completion/completions"
-		fi
-		;;
+1) BASH_COMP="/usr/share/bash-completion/completions" ;;
+0) ;;
+*)
+	if [[ -d /usr/share/bash-completion ]]; then
+		BASH_COMP="/usr/share/bash-completion/completions"
+	fi
+	;;
 esac
 
 ZSH_COMP=""
 case "${COMPLETIONS_ZSH:-auto}" in
-	1) ZSH_COMP="/usr/local/share/zsh/site-functions" ;;
-	0) ;;
-	*)
-		if command -v zsh >/dev/null 2>&1; then
-			ZSH_COMP="/usr/local/share/zsh/site-functions"
-		fi
-		;;
+1) ZSH_COMP="/usr/local/share/zsh/site-functions" ;;
+0) ;;
+*)
+	if command -v zsh >/dev/null 2>&1; then
+		ZSH_COMP="/usr/local/share/zsh/site-functions"
+	fi
+	;;
 esac
 
 [[ -n "${BASH_COMP}" ]] && mkdir -p "${BASH_COMP}"
@@ -90,8 +91,8 @@ generate_completions() {
 latest_tag_redirect() {
 	# avoids GitHub API rate limits: follows /releases/latest redirect
 	local repo="$1" tag
-	tag="$(curl -fsSLI "https://github.com/${repo}/releases/latest" 2>/dev/null \
-		| awk -F/ 'tolower($1) ~ /^location:/ {gsub("\r",""); print $NF; exit}')" || true
+	tag="$(curl -fsSLI "https://github.com/${repo}/releases/latest" 2>/dev/null |
+		awk -F/ 'tolower($1) ~ /^location:/ {gsub("\r",""); print $NF; exit}')" || true
 	[[ -n "${tag}" ]] || die "Could not resolve latest tag for ${repo}"
 	printf '%s' "${tag}"
 }

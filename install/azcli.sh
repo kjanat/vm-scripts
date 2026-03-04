@@ -7,7 +7,7 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 		source "${_dir}/_common.sh"
 	else
 		_common_tmp="$(mktemp)"
-		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh" -o "${_common_tmp}"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
 		source "${_common_tmp}"
 		rm -f "${_common_tmp}"
 	fi
