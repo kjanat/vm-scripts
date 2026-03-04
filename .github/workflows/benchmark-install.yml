@@ -1,0 +1,149 @@
+name: Benchmark install scripts
+
+on:
+  push:
+    branches: [master]
+    paths: ["install/**"]
+  pull_request:
+    paths: ["install/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Discover install scripts
+        id: discover
+        run: |
+          scripts=()
+          for f in install/*.sh; do
+            name="$(basename "$f")"
+            # skip internal helpers
+            [[ "$name" == _* ]] && continue
+            scripts+=("$name")
+          done
+          printf "scripts=%s\n" "$(printf '%s\n' "${scripts[@]}" | jq -Rsc 'split("\n") | map(select(. != ""))')" >> "$GITHUB_OUTPUT"
+
+      - name: Run benchmarks
+        id: bench
+        run: |
+          results_file="$(mktemp)"
+          printf '| Script | Duration | Exit | Installed |\n' > "$results_file"
+          printf '| ------ | -------- | ---- | --------- |\n' >> "$results_file"
+
+          total=0
+          passed=0
+          failed_list=""
+
+          for script in install/*.sh; do
+            name="$(basename "$script")"
+            [[ "$name" == _* ]] && continue
+
+            printf '\n::group::%s\n' "$name"
+
+            start="$(date +%s%N)"
+            set +e
+            sudo bash "$script" 2>&1
+            rc=$?
+            set -e
+            end="$(date +%s%N)"
+
+            elapsed_ms=$(( (end - start) / 1000000 ))
+            if (( elapsed_ms >= 60000 )); then
+              duration="$(( elapsed_ms / 60000 ))m $(( (elapsed_ms % 60000) / 1000 ))s"
+            else
+              duration="$(( elapsed_ms / 1000 )).$(printf '%03d' $(( elapsed_ms % 1000 )))s"
+            fi
+
+            # Determine what got installed (tool name = script sans .sh)
+            tool="${name%.sh}"
+            case "$tool" in
+              volta)
+                # volta installs node/npm/pnpm too
+                bins=""
+                for cmd in volta node npm pnpm; do
+                  if command -v "$cmd" >/dev/null 2>&1; then
+                    ver="$("$cmd" --version 2>/dev/null || echo '?')"
+                    bins="${bins:+$bins, }$cmd $ver"
+                  fi
+                done
+                installed="${bins:-none}"
+                ;;
+              aliases)
+                if [[ -f /etc/profile.d/00-aliases.sh ]]; then
+                  installed="profile.d configured"
+                else
+                  installed="—"
+                fi
+                ;;
+              awscli)
+                if command -v aws >/dev/null 2>&1; then
+                  installed="aws $(aws --version 2>&1 | awk '{print $1}' | cut -d/ -f2)"
+                else
+                  installed="—"
+                fi
+                ;;
+              azcli)
+                if command -v az >/dev/null 2>&1; then
+                  installed="az $(az version 2>/dev/null | jq -r '."azure-cli"' 2>/dev/null || echo '?')"
+                else
+                  installed="—"
+                fi
+                ;;
+              gcloud)
+                if command -v gcloud >/dev/null 2>&1; then
+                  installed="gcloud $(gcloud version 2>/dev/null | head -1 | awk '{print $NF}')"
+                else
+                  installed="—"
+                fi
+                ;;
+              *)
+                if command -v "$tool" >/dev/null 2>&1; then
+                  ver="$("$tool" --version 2>/dev/null | head -1 || echo '?')"
+                  installed="$tool $ver"
+                else
+                  installed="—"
+                fi
+                ;;
+            esac
+
+            if (( rc == 0 )); then
+              status="$rc"
+              passed=$(( passed + 1 ))
+            else
+              status="**$rc**"
+              failed_list="${failed_list:+$failed_list, }$name"
+            fi
+            total=$(( total + 1 ))
+
+            printf '| `%s` | %s | %s | %s |\n' "$name" "$duration" "$status" "$installed" >> "$results_file"
+            echo "::endgroup::"
+          done
+
+          # Build summary header
+          {
+            printf '## Install Script Benchmarks\n\n'
+            printf '**Runner:** `ubuntu-latest` · '
+            printf '**Arch:** `%s` · ' "$(uname -m)"
+            printf '**Date:** %s\n\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            if [[ -n "$failed_list" ]]; then
+              printf '> [!WARNING]\n> %d/%d scripts failed: %s\n\n' \
+                "$(( total - passed ))" "$total" "$failed_list"
+            else
+              printf '> [!NOTE]\n> All %d scripts completed successfully.\n\n' "$total"
+            fi
+            cat "$results_file"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          rm -f "$results_file"
+
+          # Fail the job if any script failed
+          if (( passed < total )); then
+            echo "::error::$(( total - passed ))/$total install scripts failed"
+            exit 1
+          fi
