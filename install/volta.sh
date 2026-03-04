@@ -49,3 +49,7 @@ volta --version
 node --version
 npm --version
 pnpm --version
+
+generate_completions volta "volta completions bash" "volta completions zsh"
+generate_completions npm "npm completion" "npm completion"
+generate_completions pnpm "pnpm completion bash" "pnpm completion zsh"

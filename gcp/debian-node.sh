@@ -53,27 +53,4 @@ alias ll='ls -lAhF --color=auto --group-directories-first'
 EOF
 chmod 0644 /etc/profile.d/aliases.sh
 
-log "completions: generate for bash + zsh"
-BASH_COMP="/usr/share/bash-completion/completions"
-ZSH_COMP="/usr/local/share/zsh/site-functions"
-mkdir -p "${BASH_COMP}" "${ZSH_COMP}"
-
-volta completions bash >"${BASH_COMP}/volta"
-volta completions zsh >"${ZSH_COMP}/_volta"
-
-just --completions bash >"${BASH_COMP}/just"
-just --completions zsh >"${ZSH_COMP}/_just"
-
-deno completions bash >"${BASH_COMP}/deno"
-deno completions zsh >"${ZSH_COMP}/_deno"
-
-dprint completions bash >"${BASH_COMP}/dprint"
-dprint completions zsh >"${ZSH_COMP}/_dprint"
-
-npm completion >"${BASH_COMP}/npm"
-npm completion >"${ZSH_COMP}/_npm"
-
-pnpm completion bash >"${BASH_COMP}/pnpm"
-pnpm completion zsh >"${ZSH_COMP}/_pnpm"
-
 log "done"
