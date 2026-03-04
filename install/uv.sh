@@ -24,8 +24,18 @@ uv --version
 uvx --version
 
 # --- python via uv -----------------------------------------------------------
-log "uv: install python@latest"
-uv python install --default --preview
+log "uv: install latest stable python"
+PYVER="$(uv python list 2>/dev/null \
+	| grep '^cpython-[0-9]' | grep 'download available' \
+	| grep -v -E 'freethreaded|rc[0-9]|[ab][0-9]' \
+	| head -1 | sed 's/^cpython-//;s/-.*//')"
+if [[ -z "${PYVER}" ]]; then
+	log "uv: could not determine latest stable python, falling back to default"
+	uv python install --default
+else
+	log "uv: installing python ${PYVER}"
+	uv python install --default "${PYVER}"
+fi
 
 python3 --version
 
