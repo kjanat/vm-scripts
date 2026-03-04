@@ -79,6 +79,7 @@ jobs:
               volta)
                 # volta installs node/npm/pnpm too; set env for wrappers
                 export VOLTA_HOME="/opt/volta"
+                export VOLTA_FEATURE_PNPM=1
                 export PATH="$VOLTA_HOME/bin:$PATH"
                 bins=""
                 for cmd in volta node npm pnpm; do
