@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
-# Set up a Debian-based system with Node.js, Bun, Deno, and related tools.
+# Set up Amazon Linux 2023 on EC2 with Node.js, Bun, Deno, and related tools.
 #
 # From a local clone:
-#   sudo ./gcp/debian-node.sh
+#   sudo ./aws/amazon-linux-node.sh
 #
 # Download + run (fetches install scripts automatically):
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
-#   chmod +x debian-node.sh
-#   sudo ./debian-node.sh
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/amazon-linux-node.sh -o amazon-linux-node.sh
+#   chmod +x amazon-linux-node.sh
+#   sudo ./amazon-linux-node.sh
 #
 # Pipe directly:
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/amazon-linux-node.sh | sudo bash
 #
 # Disable completions for a specific shell:
-#   COMPLETIONS_ZSH=0 sudo ./debian-node.sh
+#   COMPLETIONS_ZSH=0 sudo ./amazon-linux-node.sh
 
 set -euo pipefail
 IFS=$'\n\t'
-export DEBIAN_FRONTEND=noninteractive
 
 BRANCH="${BRANCH:-master}"
 REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH}}"
@@ -35,21 +34,19 @@ else
 	_install_tmp="$(mktemp -d)"
 	INSTALL_DIR="${_install_tmp}"
 	trap 'rm -rf "${_install_tmp}"' EXIT
-	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh aliases.sh; do
+	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh awscli.sh aliases.sh; do
 		curl -fsSL "${REPO_RAW}/install/${_f}" -o "${INSTALL_DIR}/${_f}"
 	done
 fi
 
 # ---------------------------------------------------------------------------
-# Platform dependencies — runs before _common.sh so completion auto-detection
-# finds bash-completion and zsh already installed.
+# Platform dependencies (Amazon Linux 2023 uses dnf)
 # ---------------------------------------------------------------------------
-printf "\n==> apt: update/upgrade + deps\n"
-apt-get update -y
-apt-get upgrade -y
-apt-get install -y --no-install-recommends \
-	ca-certificates curl gnupg unzip xz-utils tar \
-	build-essential git bash-completion zsh
+printf "\n==> dnf: upgrade + deps\n"
+dnf upgrade -y
+dnf install -y \
+	ca-certificates curl gnupg2 unzip xz tar \
+	gcc gcc-c++ make git bash-completion zsh
 
 # ---------------------------------------------------------------------------
 # Load shared helpers (detects installed shells for completions)
@@ -73,7 +70,11 @@ source "${INSTALL_DIR}/dprint.sh"
 # shellcheck source=install/volta.sh
 source "${INSTALL_DIR}/volta.sh"
 
-# Note: gcloud CLI is pre-installed on GCE images; use install/gcloud.sh standalone if needed
+# ---------------------------------------------------------------------------
+# Provider CLI
+# ---------------------------------------------------------------------------
+# shellcheck source=install/awscli.sh
+source "${INSTALL_DIR}/awscli.sh"
 
 # Shell aliases and options for all users
 # shellcheck source=install/aliases.sh

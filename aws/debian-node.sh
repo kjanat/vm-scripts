@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Set up a Debian-based system with Node.js, Bun, Deno, and related tools.
+# Set up a Debian-based AWS EC2 instance with Node.js, Bun, Deno, and related tools.
 #
 # From a local clone:
-#   sudo ./gcp/debian-node.sh
+#   sudo ./aws/debian-node.sh
 #
 # Download + run (fetches install scripts automatically):
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/debian-node.sh -o debian-node.sh
 #   chmod +x debian-node.sh
 #   sudo ./debian-node.sh
 #
 # Pipe directly:
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/aws/debian-node.sh | sudo bash
 #
 # Disable completions for a specific shell:
 #   COMPLETIONS_ZSH=0 sudo ./debian-node.sh
@@ -35,7 +35,7 @@ else
 	_install_tmp="$(mktemp -d)"
 	INSTALL_DIR="${_install_tmp}"
 	trap 'rm -rf "${_install_tmp}"' EXIT
-	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh aliases.sh; do
+	for _f in _common.sh shfmt.sh just.sh bun.sh deno.sh dprint.sh volta.sh awscli.sh aliases.sh; do
 		curl -fsSL "${REPO_RAW}/install/${_f}" -o "${INSTALL_DIR}/${_f}"
 	done
 fi
@@ -73,7 +73,11 @@ source "${INSTALL_DIR}/dprint.sh"
 # shellcheck source=install/volta.sh
 source "${INSTALL_DIR}/volta.sh"
 
-# Note: gcloud CLI is pre-installed on GCE images; use install/gcloud.sh standalone if needed
+# ---------------------------------------------------------------------------
+# Provider CLI
+# ---------------------------------------------------------------------------
+# shellcheck source=install/awscli.sh
+source "${INSTALL_DIR}/awscli.sh"
 
 # Shell aliases and options for all users
 # shellcheck source=install/aliases.sh

@@ -1,0 +1,225 @@
+name: Benchmark install scripts
+
+on:
+  push:
+    branches: [master]
+    paths: ["install/**"]
+  pull_request:
+    paths: ["install/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run benchmarks
+        id: bench
+        run: |
+          results_file="$(mktemp)"
+          printf '| Script | Duration | Overhead | Exit | Installed |\n' > "$results_file"
+          printf '| ------ | -------- | -------- | ---- | --------- |\n' >> "$results_file"
+
+          total=0
+          passed=0
+          failed_list=""
+          script_ms_sum=0
+          overhead_ms_sum=0
+          prev_end=""
+          wall_start="$(date +%s%N)"
+
+          for script in install/*.sh; do
+            name="$(basename "$script")"
+            [[ "$name" == _* ]] && continue
+
+            printf '\n::group::%s\n' "$name"
+
+            start="$(date +%s%N)"
+            set +e
+            sudo bash "$script" 2>&1
+            rc=$?
+            set -e
+            end="$(date +%s%N)"
+
+            elapsed_ms=$(( (end - start) / 1000000 ))
+            if (( elapsed_ms >= 60000 )); then
+              duration="$(( elapsed_ms / 60000 ))m $(( (elapsed_ms % 60000) / 1000 ))s"
+            else
+              duration="$(( elapsed_ms / 1000 )).$(printf '%03d' $(( elapsed_ms % 1000 )))s"
+            fi
+
+            # Per-script overhead = gap between previous script end and this script start
+            if [[ -n "$prev_end" ]]; then
+              gap_ms=$(( (start - prev_end) / 1000000 ))
+              overhead_ms_sum=$(( overhead_ms_sum + gap_ms ))
+              overhead="$(( gap_ms / 1000 )).$(printf '%03d' $(( gap_ms % 1000 )))s"
+            else
+              overhead="—"
+            fi
+            prev_end="$end"
+
+            # Determine what got installed (tool name = script sans .sh)
+            tool="${name%.sh}"
+
+            # Helper: get clean version string for a command
+            # Strips the tool name prefix and trims to just the version token
+            _ver() {
+              local cmd="$1"
+              local raw
+              raw="$("$cmd" --version 2>/dev/null | head -1)" || return 1
+              # Remove leading tool name with space or hyphen (e.g. "deno 2.7.2", "jq-1.7")
+              raw="${raw#"$cmd" }"
+              raw="${raw#"$cmd"-}"
+              # Strip "version " prefix (e.g. "gh version 2.87.3 (...)")
+              raw="${raw#version }"
+              raw="${raw#Version }"
+              # Strip leading "v" prefix (e.g. "v3.12.0" → "3.12.0")
+              raw="${raw#v}"
+              # Keep only the first whitespace-delimited token
+              echo "${raw%% *}"
+            }
+
+            case "$tool" in
+              uv)
+                # uv installs python, ruff, and ty to /usr/local/bin
+                export PATH="/usr/local/bin:$PATH"
+                bins=""
+                for cmd in uv ruff ty; do
+                  if command -v "$cmd" >/dev/null 2>&1; then
+                    ver="$(_ver "$cmd" || echo '?')"
+                    bins="${bins:+$bins, }$cmd $ver"
+                  fi
+                done
+                # sudo: uv installed python as root, managed-python record is in root's data dir
+                managed_py="$(sudo uv python find --managed-python 2>/dev/null)" || true
+                if [[ -n "$managed_py" ]]; then
+                  pyver="$(sudo "$managed_py" -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
+                elif command -v python3 >/dev/null 2>&1; then
+                  pyver="$(python3 -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
+                else
+                  pyver=""
+                fi
+                [[ -n "$pyver" ]] && bins="${bins:+$bins, }python $pyver"
+                installed="${bins:-none}"
+                ;;
+              volta)
+                # volta installs node/npm/pnpm too; set env for wrappers
+                export VOLTA_HOME="/opt/volta"
+                export VOLTA_FEATURE_PNPM=1
+                export PATH="$VOLTA_HOME/bin:$PATH"
+                bins=""
+                for cmd in volta node npm pnpm; do
+                  if command -v "$cmd" >/dev/null 2>&1; then
+                    ver="$(_ver "$cmd" || echo '?')"
+                    bins="${bins:+$bins, }$cmd $ver"
+                  fi
+                done
+                installed="${bins:-none}"
+                ;;
+              aliases)
+                count=0
+                files=""
+                for f in /etc/profile.d/aliases*.sh; do
+                  [[ -f "$f" ]] || continue
+                  count=$(( count + 1 ))
+                  files="${files:+$files, }$(basename "$f")"
+                done
+                if (( count > 0 )); then
+                  installed="${count} profile.d files (${files})"
+                else
+                  installed="—"
+                fi
+                ;;
+              awscli)
+                if command -v aws >/dev/null 2>&1; then
+                  installed="aws $(aws --version 2>&1 | awk '{print $1}' | cut -d/ -f2)"
+                else
+                  installed="—"
+                fi
+                ;;
+              azcli)
+                if command -v az >/dev/null 2>&1; then
+                  installed="az $(az version 2>/dev/null | jq -r '."azure-cli"' 2>/dev/null || echo '?')"
+                else
+                  installed="—"
+                fi
+                ;;
+              gcloud)
+                if command -v gcloud >/dev/null 2>&1; then
+                  installed="gcloud $(gcloud version 2>/dev/null | head -1 | awk '{print $NF}')"
+                else
+                  installed="—"
+                fi
+                ;;
+              *)
+                if command -v "$tool" >/dev/null 2>&1; then
+                  installed="$tool $(_ver "$tool" || echo '?')"
+                else
+                  installed="—"
+                fi
+                ;;
+            esac
+
+            if (( rc == 0 )); then
+              status="$rc"
+              passed=$(( passed + 1 ))
+            else
+              status="**$rc**"
+              failed_list="${failed_list:+$failed_list, }$name"
+            fi
+            total=$(( total + 1 ))
+            script_ms_sum=$(( script_ms_sum + elapsed_ms ))
+
+            printf '| `%s` | %s | %s | %s | %s |\n' "$name" "$duration" "$overhead" "$status" "$installed" >> "$results_file"
+            echo "::endgroup::"
+          done
+
+          wall_end="$(date +%s%N)"
+          wall_ms=$(( (wall_end - wall_start) / 1000000 ))
+
+          # Format totals
+          _fmt_dur() {
+            local ms="$1"
+            if (( ms >= 60000 )); then
+              printf '%dm %ds' "$(( ms / 60000 ))" "$(( (ms % 60000) / 1000 ))"
+            else
+              printf '%d.%03ds' "$(( ms / 1000 ))" "$(( ms % 1000 ))"
+            fi
+          }
+          printf '| | **%s** | **%s** | | **%d scripts** · wall **%s** |\n' \
+            "$(_fmt_dur "$script_ms_sum")" \
+            "$(_fmt_dur "$overhead_ms_sum")" \
+            "$total" \
+            "$(_fmt_dur "$wall_ms")" >> "$results_file"
+
+          # Build summary header
+          {
+            printf '## Install Script Benchmarks\n\n'
+            printf '**Runner:** `ubuntu-latest` · '
+            printf '**Arch:** `%s` · ' "$(uname -m)"
+            printf '**Date:** %s\n\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            if [[ -n "$failed_list" ]]; then
+              printf '> [!WARNING]\n> %d/%d scripts failed: %s\n\n' \
+                "$(( total - passed ))" "$total" "$failed_list"
+            else
+              printf '> [!NOTE]\n> All %d scripts completed successfully.\n\n' "$total"
+            fi
+            cat "$results_file"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+          rm -f "$results_file"
+
+          # Fail the job if any script failed
+          if (( passed < total )); then
+            echo "::error::$(( total - passed ))/$total install scripts failed"
+            exit 1
+          fi

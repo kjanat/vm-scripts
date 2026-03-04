@@ -6,7 +6,10 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 	if [[ -f "${_dir}/_common.sh" ]]; then
 		source "${_dir}/_common.sh"
 	else
-		source <(curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh")
+		_common_tmp="$(mktemp)"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
+		source "${_common_tmp}"
+		rm -f "${_common_tmp}"
 	fi
 fi
 
@@ -14,9 +17,9 @@ log "shfmt: install system-wide (/usr/local/bin)"
 if ! command -v shfmt >/dev/null 2>&1; then
 	SHFMT_TAG="$(latest_tag_redirect "mvdan/sh")"
 	case "${ARCH_SHORT}" in
-		x86_64) SHFMT_ARCH="amd64" ;;
-		aarch64) SHFMT_ARCH="arm64" ;;
-		*) die "Unsupported arch for shfmt: ${ARCH_SHORT}" ;;
+	x86_64) SHFMT_ARCH="amd64" ;;
+	aarch64) SHFMT_ARCH="arm64" ;;
+	*) die "Unsupported arch for shfmt: ${ARCH_SHORT}" ;;
 	esac
 	curl -fsSL -o /usr/local/bin/shfmt \
 		"https://github.com/mvdan/sh/releases/download/${SHFMT_TAG}/shfmt_${SHFMT_TAG}_linux_${SHFMT_ARCH}"

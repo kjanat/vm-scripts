@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Set up a Debian-based system with Node.js, Bun, Deno, and related tools.
+# Set up a Debian-based DigitalOcean Droplet with Node.js, Bun, Deno, and related tools.
 #
 # From a local clone:
-#   sudo ./gcp/debian-node.sh
+#   sudo ./digitalocean/debian-node.sh
 #
 # Download + run (fetches install scripts automatically):
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh -o debian-node.sh
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/digitalocean/debian-node.sh -o debian-node.sh
 #   chmod +x debian-node.sh
 #   sudo ./debian-node.sh
 #
 # Pipe directly:
-#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/gcp/debian-node.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/kjanat/vm-scripts/master/digitalocean/debian-node.sh | sudo bash
 #
 # Disable completions for a specific shell:
 #   COMPLETIONS_ZSH=0 sudo ./debian-node.sh
@@ -72,8 +72,6 @@ source "${INSTALL_DIR}/deno.sh"
 source "${INSTALL_DIR}/dprint.sh"
 # shellcheck source=install/volta.sh
 source "${INSTALL_DIR}/volta.sh"
-
-# Note: gcloud CLI is pre-installed on GCE images; use install/gcloud.sh standalone if needed
 
 # Shell aliases and options for all users
 # shellcheck source=install/aliases.sh

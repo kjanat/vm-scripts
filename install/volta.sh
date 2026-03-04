@@ -7,7 +7,10 @@ if [[ -z "${_COMMON_LOADED:-}" ]]; then
 	if [[ -f "${_dir}/_common.sh" ]]; then
 		source "${_dir}/_common.sh"
 	else
-		source <(curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/master}/install/_common.sh")
+		_common_tmp="$(mktemp)"
+		curl -fsSL "${REPO_RAW:-https://raw.githubusercontent.com/kjanat/vm-scripts/${BRANCH:-master}}/install/_common.sh" -o "${_common_tmp}"
+		source "${_common_tmp}"
+		rm -f "${_common_tmp}"
 	fi
 fi
 
@@ -32,14 +35,14 @@ chmod 0644 /etc/profile.d/volta.sh
 # Hard wrappers so it works in non-login shells too (cron, cloud-init, etc.)
 wrap() {
 	local name="$1"
-	cat >"/usr/local/bin/${name}" <<'EOF'
+	cat >"/usr/local/bin/${name}" <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
 export VOLTA_HOME="/opt/volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-exec "$VOLTA_HOME/bin/REPLACE_ME" "$@"
+export VOLTA_FEATURE_PNPM=1
+export PATH="\$VOLTA_HOME/bin:\$PATH"
+exec "\$VOLTA_HOME/bin/${name}" "\$@"
 EOF
-	sed -i "s/REPLACE_ME/${name}/g" "/usr/local/bin/${name}"
 	chmod 0755 "/usr/local/bin/${name}"
 }
 wrap volta
