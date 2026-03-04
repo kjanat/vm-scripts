@@ -38,17 +38,17 @@ CLI is included.
 
 **Common tools installed by every script:**
 
-| Tool   | Method                                                    |
-| ------ | --------------------------------------------------------- |
-| shfmt  | Binary from [`mvdan/sh`](https://github.com/mvdan/sh)    |
-| just   | Binary from [`casey/just`](https://github.com/casey/just) |
-| bun    | Binary from [`oven-sh/bun`](https://github.com/oven-sh/bun) |
+| Tool   | Method                                                          |
+| ------ | --------------------------------------------------------------- |
+| shfmt  | Binary from [`mvdan/sh`](https://github.com/mvdan/sh)           |
+| just   | Binary from [`casey/just`](https://github.com/casey/just)       |
+| bun    | Binary from [`oven-sh/bun`](https://github.com/oven-sh/bun)     |
 | deno   | Binary from [`denoland/deno`](https://github.com/denoland/deno) |
 | dprint | Binary from [`dprint/dprint`](https://github.com/dprint/dprint) |
-| volta  | [`get.volta.sh`](https://volta.sh)                       |
-| node   | Via Volta                                                 |
-| npm    | Via Volta                                                 |
-| pnpm   | Via Volta                                                 |
+| volta  | [`get.volta.sh`](https://volta.sh)                              |
+| node   | Via Volta                                                       |
+| npm    | Via Volta                                                       |
+| pnpm   | Via Volta                                                       |
 
 All scripts also configure bash/zsh tab completions and shell aliases for all
 users.

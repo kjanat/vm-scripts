@@ -13,11 +13,11 @@ fi
 log "awscli: install AWS CLI v2 system-wide (/usr/local/bin)"
 if ! command -v aws >/dev/null 2>&1; then
 	_tmp="$(mktemp -d)"
+	trap 'rm -rf "${_tmp}"' RETURN
 	curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-${ARCH_SHORT}.zip" \
 		-o "${_tmp}/awscliv2.zip"
 	unzip -q "${_tmp}/awscliv2.zip" -d "${_tmp}"
 	"${_tmp}/aws/install" --install-dir /usr/local/aws-cli --bin-dir /usr/local/bin
-	rm -rf "${_tmp}"
 fi
 
 aws --version

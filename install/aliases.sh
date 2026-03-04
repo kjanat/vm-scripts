@@ -107,6 +107,8 @@ export HISTSIZE=10000
 export SAVEHIST=20000
 
 # --- Global aliases (zsh only) -----------------------------------------------
+# These expand anywhere in a command line, not just at the start.
+# e.g. "ls G foo" becomes "ls | grep foo". Unset with "unalias -g G" if unwanted.
 alias -g G='| grep'
 alias -g L='| less'
 alias -g H='| head'

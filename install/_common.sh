@@ -74,13 +74,14 @@ export BASH_COMP ZSH_COMP
 # Runs BASH_CMD → $BASH_COMP/NAME   (skipped if BASH_COMP is empty)
 # Runs ZSH_CMD  → $ZSH_COMP/_NAME   (skipped if ZSH_COMP is empty)
 # SHELL is set explicitly so tools that auto-detect (e.g. bun) get the right value.
+# Commands run in a subprocess to isolate from the caller's shell context.
 generate_completions() {
 	local name="$1" bash_cmd="$2" zsh_cmd="$3"
 	if [[ -n "${BASH_COMP}" ]]; then
-		SHELL=/bin/bash eval "${bash_cmd}" >"${BASH_COMP}/${name}"
+		SHELL=/bin/bash bash -c "${bash_cmd}" >"${BASH_COMP}/${name}"
 	fi
 	if [[ -n "${ZSH_COMP}" ]]; then
-		SHELL=/bin/zsh eval "${zsh_cmd}" >"${ZSH_COMP}/_${name}"
+		SHELL=/bin/zsh bash -c "${zsh_cmd}" >"${ZSH_COMP}/_${name}"
 	fi
 }
 
@@ -99,11 +100,11 @@ install_zip_bin() {
 	local url="$1" binname="$2"
 	local tmp
 	tmp="$(mktemp -d)"
+	trap 'rm -rf "${tmp}"' RETURN
 	curl -fsSL -o "${tmp}/asset.zip" "${url}"
 	unzip -q "${tmp}/asset.zip" -d "${tmp}"
 	local found
 	found="$(find "${tmp}" -type f -name "${binname}" 2>/dev/null | head -n1 || true)"
 	[[ -n "${found}" ]] || die "Could not find ${binname} in ${url}"
 	install -m 0755 "${found}" "/usr/local/bin/${binname}"
-	rm -rf "${tmp}"
 }

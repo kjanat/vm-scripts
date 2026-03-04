@@ -72,6 +72,8 @@ source "${INSTALL_DIR}/dprint.sh"
 # shellcheck source=install/volta.sh
 source "${INSTALL_DIR}/volta.sh"
 
+# Note: gcloud CLI is pre-installed on GCE images; use install/gcloud.sh standalone if needed
+
 # Shell aliases and options for all users
 # shellcheck source=install/aliases.sh
 source "${INSTALL_DIR}/aliases.sh"

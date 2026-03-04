@@ -79,7 +79,8 @@ jobs:
                     bins="${bins:+$bins, }$cmd $ver"
                   fi
                 done
-                managed_py="$(uv python find --managed-python 2>/dev/null)" || true
+                # sudo: uv installed python as root, managed-python record is in root's data dir
+                managed_py="$(sudo uv python find --managed-python 2>/dev/null)" || true
                 if [[ -n "$managed_py" ]]; then
                   pyver="$("$managed_py" -c 'import platform; print(platform.python_version())' 2>/dev/null || echo '?')"
                 elif command -v python3 >/dev/null 2>&1; then

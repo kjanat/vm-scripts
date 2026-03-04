@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `awscli.sh` — AWS CLI v2 from Amazon's official installer
   - `azcli.sh` — Azure CLI via Microsoft's Debian installer
   - `gcloud.sh` — Google Cloud SDK to `/opt/google-cloud-sdk`
+  - `jq.sh` — JSON processor from `jqlang/jq`
 - `AGENTS.md` files for root, `install/`, `gcp/`, `aws/`, `azure/`, and
   `digitalocean/` directories
 - `.dprint.jsonc` config with `shfmt` exec plugin for shell formatting
@@ -43,3 +44,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   directories are cleaned up on early failures
 - Stray leading single-quote in `opencode.sh` zsh completion
   `zsh_eval_context` conditional
+- `generate_completions` in `_common.sh` now uses `bash -c` subprocess instead
+  of `eval` to isolate from caller's shell context
+- Temp dirs in `awscli.sh`, `just.sh`, `opencode.sh`, and `install_zip_bin`
+  cleaned up via `trap RETURN` instead of manual `rm -rf` (no leak on failure)
+- `volta.sh` wrapper uses unquoted heredoc instead of fragile `sed` replacement
+- `python3 --version` in `uv.sh` guarded against PATH failure
+- CI benchmark python version detection uses `sudo uv python find` to match
+  root-installed managed python
+- `jq` added as standalone installer `install/jq.sh` (required by `uv.sh`)

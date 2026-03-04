@@ -37,7 +37,12 @@ else
 fi
 hash -r
 
-python3 --version
+# Verify — use uv's managed python directly if python3 isn't on PATH
+if command -v python3 >/dev/null 2>&1; then
+	python3 --version
+else
+	uv python find --managed-python
+fi
 
 # --- ruff from GitHub ---------------------------------------------------------
 log "ruff: install from GitHub"

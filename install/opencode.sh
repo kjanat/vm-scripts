@@ -18,9 +18,11 @@ if ! command -v opencode >/dev/null 2>&1; then
 		aarch64) OC_ARCH="arm64" ;;
 		*) die "Unsupported arch for opencode: ${ARCH_SHORT}" ;;
 	esac
+	_tmp="$(mktemp -d)"
+	trap 'rm -rf "${_tmp}"' RETURN
 	curl -fsSL "https://github.com/anomalyco/opencode/releases/download/${OC_TAG}/opencode-linux-${OC_ARCH}.tar.gz" \
-		| tar xz -C /usr/local/bin opencode
-	chmod 0755 /usr/local/bin/opencode
+		| tar xz -C "${_tmp}" opencode
+	install -m 0755 "${_tmp}/opencode" /usr/local/bin/opencode
 fi
 
 opencode --version
